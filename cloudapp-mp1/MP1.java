@@ -1,8 +1,11 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.lang.reflect.Array;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MP1 {
     Random generator;
@@ -53,6 +56,28 @@ public class MP1 {
         String[] ret = new String[20];
        
         //TODO
+        List reservedWords = Arrays.asList(stopWordsArray);
+        BufferedReader br = new BufferedReader(new FileReader(inputFileName));
+        String line;
+        ConcurrentHashMap<String, Integer> freqs = new ConcurrentHashMap<String, Integer>();
+        while ((line = br.readLine()) != null) {
+            // 1. Tokenization
+            StringTokenizer st = new StringTokenizer(line, delimiters);
+            while (st.hasMoreTokens()) {
+                // 2. Clean
+                String candidate = st.nextToken().toLowerCase().trim();
+                // 3. Remove reserved words
+                if (reservedWords.contains(candidate) == false) {
+                    // 4. Track frequencies
+                    if (freqs.containsKey(candidate))
+                        freqs.put(candidate, freqs.get(candidate) + 1);
+                    else
+                        freqs.put(candidate, 1);
+                }
+            }
+        }
+
+        // 5. Sort frequencies
 
         return ret;
     }
