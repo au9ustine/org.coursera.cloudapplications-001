@@ -1,7 +1,6 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.lang.reflect.Array;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -54,44 +53,55 @@ public class MP1 {
 
     public String[] process() throws Exception {
         String[] ret = new String[20];
-       
-        //TODO
-        List reservedWords = Arrays.asList(stopWordsArray);
-        BufferedReader br = new BufferedReader(new FileReader(inputFileName));
-        String line;
-        ConcurrentHashMap<String, Integer> freqs = new ConcurrentHashMap<String, Integer>();
-        while ((line = br.readLine()) != null) {
+        List<String> reservedWords = Arrays.asList(stopWordsArray);
+        List<String> totalLines = Files.readAllLines(Paths.get(inputFileName), Charset.defaultCharset());
+        ConcurrentHashMap<String, Integer> frequencies = new ConcurrentHashMap<String, Integer>();
+
+        for (Integer lineNum : getIndexes()) {
+            String line = totalLines.get(lineNum);
             // 1. Tokenization
-            StringTokenizer st = new StringTokenizer(line, delimiters);
-            while (st.hasMoreTokens()) {
+            StringTokenizer tokenizer = new StringTokenizer(line, delimiters);
+            while (tokenizer.hasMoreTokens()) {
                 // 2. Clean
-                String candidate = st.nextToken().toLowerCase().trim();
-                // 3. Remove reserved words
-                if (reservedWords.contains(candidate) == false) {
+                String candidate = tokenizer.nextToken().toLowerCase().trim();
+                // 3. If candidate word is not reserved
+                if (!reservedWords.contains(candidate)) {
                     // 4. Track frequencies
-                    if (freqs.containsKey(candidate))
-                        freqs.put(candidate, freqs.get(candidate) + 1);
+                    if (frequencies.containsKey(candidate))
+                        frequencies.put(candidate, frequencies.get(candidate) + 1);
                     else
-                        freqs.put(candidate, 1);
+                        frequencies.put(candidate, 1);
                 }
             }
         }
 
         // 5. Sort frequencies
-
+        ArrayList<Map.Entry<String, Integer>> mappedList = new ArrayList<Map.Entry<String, Integer>>(frequencies.entrySet());
+        Collections.sort(mappedList, new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                if (o1.getValue() < o2.getValue())
+                    return 1;
+                else if (o1.getValue() > o2.getValue())
+                    return -1;
+                else
+                    return o1.getKey().compareTo(o2.getKey());
+            }
+        });
+        for (int i = 0; i < 20; i++)
+            ret[i] = mappedList.get(i).getKey();
         return ret;
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 1){
+        if (args.length < 1) {
             System.out.println("MP1 <User ID>");
-        }
-        else {
+        } else {
             String userName = args[0];
             String inputFileName = "./input.txt";
             MP1 mp = new MP1(userName, inputFileName);
             String[] topItems = mp.process();
-            for (String item: topItems){
+            for (String item : topItems) {
                 System.out.println(item);
             }
         }
