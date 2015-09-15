@@ -14,3 +14,4 @@ hs_err_pid*
 *.iml
 out/
 *~
+cloudapp-mp2/internal_use/*
