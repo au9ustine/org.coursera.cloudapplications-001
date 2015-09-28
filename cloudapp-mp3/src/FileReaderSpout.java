@@ -15,7 +15,7 @@ import backtype.storm.tuple.Values;
 public class FileReaderSpout implements IRichSpout {
   private SpoutOutputCollector _collector;
   private TopologyContext context;
-
+  private BufferedReader reader;
 
   @Override
   public void open(Map conf, TopologyContext context,
@@ -28,6 +28,7 @@ public class FileReaderSpout implements IRichSpout {
 
     ------------------------------------------------- */
 
+    reader = new BufferedReader(new FileReader(conf.get("wordsFile").toString()));
     this.context = context;
     this._collector = collector;
   }
@@ -42,7 +43,10 @@ public class FileReaderSpout implements IRichSpout {
     2. don't forget to sleep when the file is entirely read to prevent a busy-loop
 
     ------------------------------------------------- */
-
+    String line = null;
+    if ((line = reader.readLine()) != null) {
+        _collector.emit(new Values(String))
+    }
 
   }
 
