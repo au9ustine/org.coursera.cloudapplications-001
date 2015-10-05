@@ -31,9 +31,9 @@ public class NormalizerBolt extends BaseBasicBolt {
     String sentence = tuple.getString(0);
     String[]words=sentence.split("[\\s~`!@#$%^&*(-)+=_:;'\",.<>?/\\\\0-9"+"\\]\\[\\}\\{]+");
 
-    for(String word:words){
+    for (String word : words) {
         if (commonWords.toLowerCase().contains(word) == false) {
-            collector.emit(new Values(words));
+            collector.emit(new Values(word));
         }
     }
 
