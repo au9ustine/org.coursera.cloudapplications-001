@@ -193,6 +193,8 @@ public class TopTitleStatistics extends Configured implements Tool {
             Integer sum, mean, max, min, var;
 
             // TODO
+            // I'm so stupid that I've been stuck here over 5 days
+            // and the awful thing is that I don't have any idea about that
 
             context.write(new Text("Mean"), new IntWritable(mean));
             context.write(new Text("Sum"), new IntWritable(sum));
